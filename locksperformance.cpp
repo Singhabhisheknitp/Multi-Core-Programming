@@ -103,7 +103,7 @@ int main(){
     chrono::duration<double> elapsed1 = end_TTAS - start_TTAS;
     double time_TTAS = elapsed1.count()/threadnum;
 
-    locklatency<<threadnum<<","<<time_TAS<<","<<time_TTAS<<","<<"\n";
+    locklatency<<threadnum<<","<<time_TAS<<","<<time_TTAS<<"\n";
     threadnum = threadnum + 4;
    
 }

@@ -5,7 +5,7 @@ df = pd.read_csv('locklatency.csv', skiprows=1, names=['T', 'Time_TAS', 'Time_TT
 
 # Plot with specified line width and marker style
 ax = df.plot(x='T', y=['Time_TAS', 'Time_TTAS'], kind='line', linewidth=3, 
-             style=['o-', 'x-', '*-'], markersize=8)
+             style=['o-', 'x-'], markersize=8)
 
 plt.title('Threadnum vs Time', fontsize=7)
 plt.xlabel('Threadnum', fontsize=7)
