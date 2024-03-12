@@ -100,7 +100,7 @@ int main(){
     for(int i = 1; i <= threadnum; i++) { threads.push_back(thread(cs_TTAS));}
     for(auto& thread : threads) {thread.join();}
     auto end_TTAS = chrono::high_resolution_clock::now();
-    chrono::duration<double> elapsed1 = end_TTAS - start_TTAS;
+    chrono::duration<double> elapsed1 = end_TTAS - start_TTAS; 
     double time_TTAS = elapsed1.count()/threadnum;
 
     locklatency<<threadnum<<","<<time_TAS<<","<<time_TTAS<<"\n";
