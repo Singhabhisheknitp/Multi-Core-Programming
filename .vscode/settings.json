@@ -2,6 +2,7 @@
     "files.associations": {
         "atomic": "cpp",
         "iosfwd": "cpp",
-        "new": "cpp"
+        "new": "cpp",
+        "chrono": "cpp"
     }
 }
