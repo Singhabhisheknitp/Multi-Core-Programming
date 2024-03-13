@@ -29,7 +29,7 @@ void cs_TAS(){
         m->lock();
         //CS 
     int count = 0; 
-    for (int i = 0; i < 1000000; i++){ 
+    for (int i = 0; i < 100000000; i++){ 
         count = count++;
         m->unlock();
        
@@ -60,7 +60,7 @@ void cs_TTAS(){
         n->lock();
         //CS 
     int count = 0;
-    for (int i = 0; i < 1000000; i++){
+    for (int i = 0; i < 100000000; i++){
         count = count++; 
     }  
         n->unlock();

@@ -41,20 +41,15 @@ thread_local atomic<int> ALock::id(0);
 void cs_alock(int numthread){
     ALock* p = new ALock(numthread);
     
-    for (int j = 0; j < 100000; j++){
+    
         p->lock();
         //CS 
-    int c = 0; int d = 0; int e = 0; int f = 0;
-    for (int i = 0; i < 100; i++){
-        c = c+1; 
-        d = d+1;
-        e = e+1;
-        f = f+1;
-    }  
-        p->unlock();
+        int count = 0; 
+        for (int i = 0; i < 1000000; i++){ count++;} 
+      p->unlock();
        
     }
-}
+
 
 int main(){
     ofstream locklatency("locklatency.csv");
