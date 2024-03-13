@@ -26,16 +26,11 @@ public:
 };
 TASLock* m = new TASLock() ;
 void cs_TAS(){
-    for (int j = 0; j < 100000; j++){
         m->lock();
         //CS 
-    int c = 0; int d = 0; int e = 0; int f = 0;
-    for (int i = 0; i < 100; i++){ 
-        c = c+1; 
-        d = d+1;
-        e = e+1;
-        f = f+1;
-    }  
+    int count = 0; 
+    for (int i = 0; i < 1000000; i++){ 
+        count = count++;
         m->unlock();
        
     }}
@@ -60,21 +55,17 @@ public:
 
 };
 TTASLock* n = new TTASLock() ;
+
 void cs_TTAS(){
-    for (int j = 0; j < 100000; j++){
         n->lock();
         //CS 
-    int c = 0; int d = 0; int e = 0; int f = 0;
-    for (int i = 0; i < 100; i++){
-        c = c+1; 
-        d = d+1;
-        e = e+1;
-        f = f+1;
+    int count = 0;
+    for (int i = 0; i < 1000000; i++){
+        count = count++; 
     }  
         n->unlock();
        
     }
-}
 
 
 int main(){
@@ -101,7 +92,7 @@ int main(){
     for(auto& thread : threads) {thread.join();}
     auto end_TTAS = chrono::high_resolution_clock::now();
     chrono::duration<double> elapsed1 = end_TTAS - start_TTAS; 
-    double time_TTAS = elapsed1.count()/threadnum;
+    double time_TTAS = elapsed1.count();
 
     locklatency<<threadnum<<","<<time_TAS<<","<<time_TTAS<<"\n";
     threadnum = threadnum + 4;
