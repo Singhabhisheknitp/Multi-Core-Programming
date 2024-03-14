@@ -44,37 +44,8 @@ public:
 
 };
 
-
-
-
-
-// void cs_TAS(){  
-    
-//         for (int j = 0; j < 100000; j++){
-//         m->lock(); 
-//         //CS - start
-//     int c = 0; 
-//     for (int i = 0; i < 100; i++){ 
-//         c = c+1; 
-//     }  
-//          //CS - end
-//        m->unlock();  
-//     }}
-       
-// void cs_TTAS(){
-    
-//      for (int j = 0; j < 100000; j++){
-//         n->lock(); 
-//         //CS - start
-//     int c = 0; 
-//     for (int i = 0; i < 100; i++){ 
-//         c = c+1; 
-//     }  
-//          //CS - end
-//         n->unlock();  
-//     }}
-
 template <class LockType>
+
 void cs(LockType* lock){
     for (int j = 0; j < 100000; j++){
         lock->lock();
@@ -109,8 +80,6 @@ int main(){
     int step = 4;
     
     locklatency<<"T, Time_TAS, Time_TTAS\n";
-
-
 
     while (  threadnum <= thread_count){
     double time_TAS = run_crticalsection(threadnum, [m](){ cs(m); }); 

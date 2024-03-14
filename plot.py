@@ -1,5 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 df = pd.read_csv('locklatency.csv')
 columns = df.columns.tolist()
 columns_num = len(columns) - 1
@@ -11,6 +12,8 @@ plt.xlabel('Threadnum', fontsize=7)
 plt.ylabel('Time', fontsize=7)
 ax.legend(df.columns[1: ], fontsize=7)
 plt.grid(True)
+
+
 plt.savefig('plot.png')
 
 

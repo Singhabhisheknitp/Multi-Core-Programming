@@ -6,6 +6,7 @@
 #include <fstream>
 #include <atomic>
 #include <unistd.h>
+#include <functional>
 using namespace std;
 //used for cs section of the loop
 
@@ -51,21 +52,6 @@ class MCSLock {
 
     }
 };
-thread_local atomic<Tnode1*> MCSLock::myNode;
-
-
-void cs_mcslock(){
-    MCSLock* r = new MCSLock();
-   for (int j = 0; j < 100000; j++){
-        r->lock();
-        //CS - start
-    int c = 0; 
-    for (int i = 0; i < 100; i++){ 
-        c = c+1; 
-    }  
-         //CS - end    
-        r->unlock();
-}}
 
 
 class Tnode {
@@ -76,8 +62,6 @@ class Tnode {
     }
   };
 
-
- 
 class CLHLock {
   public:
  atomic<Tnode*> tail;
@@ -103,21 +87,6 @@ class CLHLock {
         myNode.store(myPred.load());    
         }
  };
-
-thread_local atomic<Tnode*> CLHLock::myNode;
-thread_local atomic<Tnode*> CLHLock::myPred;
-void cs_clhlock(){
- CLHLock* p = new CLHLock();
- for (int j = 0; j < 100000; j++){
-        p->lock();
-        //CS - start
-    int c = 0; 
-    for (int i = 0; i < 100; i++){ 
-        c = c+1; 
-    }  
-         //CS - end    
-        p->unlock();
- }}
 
 
 class ALock {
@@ -148,10 +117,36 @@ void lock() {
 
        
     };
-thread_local atomic<int> ALock::id(0);
 
-void cs_alock(int numthread){
-    ALock* p = new ALock(numthread);
+
+void cs_clhlock(){
+ CLHLock* p = new CLHLock();
+ for (int j = 0; j < 100000; j++){
+        p->lock();
+        //CS - start
+    int c = 0; 
+    for (int i = 0; i < 100; i++){ 
+        c = c+1; 
+    }  
+         //CS - end    
+        p->unlock();
+ }}
+
+void cs_mcslock(){
+    MCSLock* r = new MCSLock();
+   for (int j = 0; j < 100000; j++){
+        r->lock();
+        //CS - start
+    int c = 0; 
+    for (int i = 0; i < 100; i++){ 
+        c = c+1; 
+    }  
+         //CS - end    
+        r->unlock();
+}}
+
+void cs_alock(int* numthread){
+    ALock* p = new ALock(*numthread);
         for (int j = 0; j < 100000; j++){
         p->lock();
         //CS - start
@@ -163,40 +158,37 @@ void cs_alock(int numthread){
         p->unlock();
     }}
 
+double run_critical_section(int threadnum = 0, function<void()>func = nullptr){
+    vector<thread> threads;
+    auto start = chrono::high_resolution_clock::now(); 
+    for(int i = 1; i <= threadnum; i++) { threads.push_back(thread(func));}
+    for(auto& thread : threads) {thread.join();}
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double> elapsed = end - start;
+    return elapsed.count()/threadnum;
+}
+
+thread_local atomic<int> ALock::id(0);
+thread_local atomic<Tnode1*> MCSLock::myNode;
+thread_local atomic<Tnode*> CLHLock::myNode;
+thread_local atomic<Tnode*> CLHLock::myPred;
 
 int main(){
+    
     ofstream locklatency("locklatency.csv");
     locklatency<<"T, Time_alocks, Time_clhlock, Time_mcslock\n";
+
     int threadnum = 1;
-    while (threadnum <= 40){
-    vector<thread> threads;
-
-    auto start_alock = chrono::high_resolution_clock::now(); 
-    for(int i = 1; i <= threadnum; i++) { threads.push_back(thread(cs_alock, threadnum));}
-    for(auto& thread : threads) {thread.join();}
-    auto end_alock = chrono::high_resolution_clock::now();
-    chrono::duration<double> elapsed3 = end_alock - start_alock;
-    double time_alock = elapsed3.count()/threadnum;
-    threads.clear();
-
-
-    auto start_clhlock = chrono::high_resolution_clock::now(); 
-    for(int i = 1; i <= threadnum; i++) { threads.push_back(thread(cs_clhlock));}
-    for(auto& thread : threads) {thread.join();}
-    auto end_clhlock = chrono::high_resolution_clock::now();
-    chrono::duration<double> elapsed4 = end_clhlock - start_clhlock;
-    double time_clhlock = elapsed4.count()/threadnum;
-    threads.clear();
-
-    auto start_mcslock = chrono::high_resolution_clock::now();
-    for(int i = 1; i <= threadnum; i++) { threads.push_back(thread(cs_mcslock));}
-    for(auto& thread : threads) {thread.join();}
-    auto end_mcslock = chrono::high_resolution_clock::now();
-    chrono::duration<double> elapsed6 = end_mcslock - start_mcslock;
-    double time_mcslock = elapsed6.count()/threadnum;
+    int thread_count = 40;
+    int step = 4;
+  
+    while (threadnum <= thread_count){
+    double time_alock = run_critical_section(threadnum, bind(cs_alock, &threadnum));
+    double time_clhlock = run_critical_section(threadnum, cs_clhlock);
+    double time_mcslock = run_critical_section(threadnum, cs_mcslock);
 
     locklatency<<threadnum<<","<<time_alock<<","<<time_clhlock<<","<<time_mcslock<<"\n";
-    threadnum = threadnum + 4;
+    threadnum = threadnum + step;
 }
 locklatency.close();
 return 0;
