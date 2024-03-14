@@ -74,22 +74,22 @@ int main(){
     TTASLock* n = new TTASLock();
     TASLock* m = new TASLock();
     
-    ofstream locklatency("locklatency.csv");
+    ofstream locklatency1("locklatency1.csv");
     int threadnum = 1;
     int thread_count = 40;
     int step = 4;
     
-    locklatency<<"T, Time_TAS, Time_TTAS\n";
+    locklatency1<<"T, Time_TAS, Time_TTAS\n";
 
     while (  threadnum <= thread_count){
     double time_TAS = run_crticalsection(threadnum, [m](){ cs(m); }); 
     double time_TTAS = run_crticalsection(threadnum, [n](){ cs(n); });
 
-    locklatency<<threadnum<<","<<time_TAS<<","<<time_TTAS<<"\n";
+    locklatency1<<threadnum<<","<<time_TAS<<","<<time_TTAS<<"\n";
     threadnum = threadnum + step;
    
 }
-    locklatency.close();
+    locklatency1.close();
     return 0;
 }
 

@@ -4,7 +4,8 @@ import numpy as np
 df = pd.read_csv('locklatency.csv')
 columns = df.columns.tolist()
 columns_num = len(columns) - 1
-styles = ['*-', 'o-', 'x-', '+-']
+styles = ['*-', 'o-', 'x-', '+-', 's-']
+
 ax = df.plot(x=columns[0], y=columns[1:], kind='line', linewidth=3, style=styles[:columns_num], markersize=8)
 
 plt.title('Threadnum vs Time', fontsize=7)

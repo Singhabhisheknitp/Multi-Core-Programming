@@ -175,8 +175,8 @@ thread_local atomic<Tnode*> CLHLock::myPred;
 
 int main(){
     
-    ofstream locklatency("locklatency.csv");
-    locklatency<<"T, Time_alocks, Time_clhlock, Time_mcslock\n";
+    ofstream locklatency2("locklatency2.csv");
+    locklatency2<<"T, Time_alocks, Time_clhlock, Time_mcslock\n";
 
     int threadnum = 1;
     int thread_count = 40;
@@ -187,9 +187,9 @@ int main(){
     double time_clhlock = run_critical_section(threadnum, cs_clhlock);
     double time_mcslock = run_critical_section(threadnum, cs_mcslock);
 
-    locklatency<<threadnum<<","<<time_alock<<","<<time_clhlock<<","<<time_mcslock<<"\n";
+    locklatency2<<threadnum<<","<<time_alock<<","<<time_clhlock<<","<<time_mcslock<<"\n";
     threadnum = threadnum + step;
 }
-locklatency.close();
+locklatency2.close();
 return 0;
 }
