@@ -73,8 +73,9 @@ double run_crticalsection(int threadnum = 0, function<void()> func = nullptr ){
 int main(){
     TTASLock* n = new TTASLock();
     TASLock* m = new TASLock();
+    string path = "/mnt/c/COL818/Multi-Core-Programming/benchmarking"; 
     
-    ofstream locklatency1("locklatency1.csv");
+    ofstream locklatency1(path + "locklatency1.csv"); 
     int threadnum = 1;
     int thread_count = 40;
     int step = 4;

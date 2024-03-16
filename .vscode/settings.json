@@ -3,6 +3,7 @@
         "atomic": "cpp",
         "iosfwd": "cpp",
         "new": "cpp",
-        "chrono": "cpp"
+        "chrono": "cpp",
+        "iostream": "cpp"
     }
 }
