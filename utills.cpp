@@ -12,6 +12,7 @@ using namespace std;
 
 template <class LockType>
 void critical_section(LockType* lock){
+
     for (int j = 0; j < 100000; j++){
         lock->lock();
         //critical_section - start
@@ -24,7 +25,10 @@ void critical_section(LockType* lock){
     }
 }
 
+
+
 double runtime_crticalsection(int threadnum = 0, function<void()> func = nullptr ){
+    
     vector<thread> threads;
     auto start = chrono::high_resolution_clock::now(); // START
     

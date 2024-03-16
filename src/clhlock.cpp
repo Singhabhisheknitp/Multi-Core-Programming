@@ -23,15 +23,17 @@ class CLHLock {
     atomic<Tnode*> tail;
     static thread_local atomic<Tnode*> myNode;
     static thread_local atomic<Tnode*> myPred;
-
-    CLHLock() {
-        tail = new Tnode();
+    static void initialize() {
         myNode.store(new Tnode());
         myPred.store(nullptr);
+    }
+
+    CLHLock() {
+        tail = new Tnode(); 
         }
 
     void lock() {
-        Tnode* curr = myNode.load();
+        Tnode* curr = myNode.load();        
         curr->locked = true;
         Tnode* pred = tail.exchange(curr);
         myPred.store(pred);
