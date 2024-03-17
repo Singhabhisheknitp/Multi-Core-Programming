@@ -1,8 +1,5 @@
-g++ TASlocks.cpp -o tas
-g++ queuelock.cpp -o queue
-
-./tas
-./queue
+g++ main.cpp -o run
+./run
 echo "Data Generated"
 python3 mergecsv.py
 python3 plot.py

@@ -17,3 +17,4 @@ df.to_csv('locklatency.csv', index=False)
 df.reset_index().to_csv('benchmarking/locklatency.csv', index=False)
 
 
+
