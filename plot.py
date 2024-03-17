@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-df = pd.read_csv('locklatency.csv')
+df = pd.read_csv('benchmarking/locklatency.csv')
 columns = df.columns.tolist()
 columns_num = len(columns) - 1
 styles = ['*-', 'o-', 'x-', '+-', 's-']
@@ -15,6 +15,6 @@ ax.legend(df.columns[1: ], fontsize=7)
 plt.grid(True)
 
 
-plt.savefig('plot.png')
+plt.savefig('benchmarking/plot.png')
 
 

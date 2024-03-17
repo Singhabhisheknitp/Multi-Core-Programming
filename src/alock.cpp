@@ -14,9 +14,10 @@ class ALock {
     atomic<int>* tail;
     bool* flag;
     int size;
+    
 
-    ALock(int numthread) {
-        size = numthread;
+    ALock(int* numthread) {
+        size = *numthread;
         id.store(0);
         tail = new atomic<int>(0);
         flag = new bool[size]();

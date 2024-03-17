@@ -11,7 +11,11 @@ using namespace std;
 class TTASLock {
     public:
     atomic<bool> state;
-    TTASLock() : state(false) {}
+    int size; // dummy variable just to make all class template standard for initialising the constructor
+    TTASLock(int* numthread) {
+        state =false ;
+        size =  *numthread;
+    }
 
     void lock() {
         while (true) {

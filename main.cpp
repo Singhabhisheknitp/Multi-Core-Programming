@@ -1,18 +1,20 @@
 #include"src/taslock.cpp"
 #include"src/ttaslock.cpp"
 #include"src/clhlock.cpp"
+#include"src/alock.cpp"
+#include"src/mcslock.cpp"
+
 #include"utills.cpp"
 
 int main(){
-    TTASLock* n = new TTASLock();
-    TASLock* m = new TASLock();
-    // CLHLock* o = new CLHLock();
-
-    int thread_count = 40;
-    int step = 2;
-    use_lock_and_write_to_csv(m, "tas.csv", "taslock", step, thread_count);
-    use_lock_and_write_to_csv(n, "ttas.csv", "ttaslock", step, thread_count);
-    // use_lock_and_write_to_csv(o, "clh.csv", "clhlock", step, thread_count);
+   
+    int thread_count = 8;
+    int step = 1;
+    use_lock_and_write_to_csv<TASLock>( "tas.csv", "taslock", step, thread_count);
+    use_lock_and_write_to_csv<TTASLock>("ttas.csv", "ttaslock", step, thread_count);
+    use_lock_and_write_to_csv<ALock>("alock.csv", "alock", step, thread_count);
+    use_lock_and_write_to_csv<CLHLock>("clh.csv", "clhlock", step, thread_count);
+    use_lock_and_write_to_csv<MCSLock>("mcs.csv", "mcslock", step, thread_count);
     
 
     return 0;

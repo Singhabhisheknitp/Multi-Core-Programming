@@ -8,11 +8,11 @@
 #include <functional>
 using namespace std;
 
-class Tnode{
+class Tnode1{
 public:
     atomic<bool> wait;
-    Tnode* next;
-    Tnode(){
+    Tnode1* next;
+    Tnode1(){
         wait = false;
         next = nullptr;
     }
@@ -21,17 +21,19 @@ public:
 
 class MCSLock {
     public:
-    atomic<Tnode*> tail;
-    static thread_local atomic<Tnode*> myNode;
+    atomic<Tnode1*> tail;
+    static thread_local atomic<Tnode1*> myNode;
+    int size; // dummy variable just to make all class template standard for initialising the constructor
 
-    MCSLock() {
-        atomic<Tnode*> tail(nullptr);
-        myNode.store(new Tnode());
+    MCSLock(int* numthread) {
+        atomic<Tnode1*> tail(nullptr);
+        myNode.store(new Tnode1());
+        size =  *numthread;
         }
 
     void lock() {
-        Tnode* cnode = myNode.load();
-        Tnode* pnode = tail.exchange(cnode);
+        Tnode1* cnode = myNode.load();
+        Tnode1* pnode = tail.exchange(cnode);
         if (pnode != nullptr) {
         cnode->wait = true;
         pnode->next = cnode;
@@ -40,7 +42,7 @@ class MCSLock {
     }
 
     void unlock() {
-        Tnode* cnode = myNode.load();
+        Tnode1* cnode = myNode.load();
         if (cnode->next == nullptr) {
         if (tail.compare_exchange_strong(cnode, nullptr)) 
         {return;}
@@ -52,6 +54,6 @@ class MCSLock {
     }
 };
 
-thread_local atomic<Tnode*> MCSLock::myNode;
+thread_local atomic<Tnode1*> MCSLock::myNode;
 
 

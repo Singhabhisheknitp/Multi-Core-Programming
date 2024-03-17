@@ -12,7 +12,12 @@ using namespace std;
 class TASLock {
     public:
     atomic<bool> state;
-    TASLock() : state(false) {}
+    int size; // dummy variable just to make all class template standard for initialising the constructor
+
+    TASLock(int* numthread) {
+        state =false;
+        size =  *numthread;
+        }
 
     void lock() {
         while (this->state.exchange(true)) {}

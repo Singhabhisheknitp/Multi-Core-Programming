@@ -23,13 +23,14 @@ class CLHLock {
     atomic<Tnode*> tail;
     static thread_local atomic<Tnode*> myNode;
     static thread_local atomic<Tnode*> myPred;
-    static void initialize() {
-        myNode.store(new Tnode());
-        myPred.store(nullptr);
-    }
+    int size; // dummy variable just to make all class template standard for initialising the constructor
 
-    CLHLock() {
-        tail = new Tnode(); 
+    CLHLock(int* numthread) {
+        tail = new Tnode();
+        myNode.store(new Tnode());
+        myPred.store(nullptr);  
+        size =  *numthread;
+      
         }
 
     void lock() {
