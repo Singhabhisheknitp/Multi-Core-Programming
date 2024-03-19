@@ -22,22 +22,38 @@ public:
 class MCSLock {
     public:
     atomic<Tnode1*> tail;
+    static  Tnode1* sentinal;
     static thread_local atomic<Tnode1*> myNode;
     int size; // dummy variable just to make all class template standard for initialising the constructor
 
     MCSLock(int* numthread) {
-        atomic<Tnode1*> tail(nullptr);
-        myNode.store(new Tnode1());
+        sentinal= new Tnode1();
+        tail.store(sentinal);
         size =  *numthread;
         }
 
+    void init(){
+        myNode.store(new Tnode1());
+    }
+
     void lock() {
+        init();
         Tnode1* cnode = myNode.load();
+        atomic_thread_fence(memory_order_acquire);
         Tnode1* pnode = tail.exchange(cnode);
-        if (pnode != nullptr) {
+        atomic_thread_fence(memory_order_release);
+
+        atomic_thread_fence(memory_order_acquire);
+        if (pnode !=  sentinal) {
+        cout<<"check1"<<endl;
         cnode->wait = true;
+        cout<<"check2"<<endl;
+        cout<<pnode<<endl;
         pnode->next = cnode;
+        cout<<"check3"<<endl;
+        atomic_thread_fence(memory_order_release);
         while(cnode->wait){}
+        cout<<"lock acquired"<<endl;
         } 
     }
 
@@ -55,5 +71,6 @@ class MCSLock {
 };
 
 thread_local atomic<Tnode1*> MCSLock::myNode;
+Tnode1* MCSLock::sentinal;
 
 

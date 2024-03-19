@@ -8,26 +8,22 @@
 #include <unistd.h>
 #include <functional>
 using namespace std;
-
-
+int* counter = new int(0);
+int critical_section_size = 100;
+int lock_overhead = 10;
 template <class LockType> 
 void critical_section(int* size){
-   static LockType* m = new LockType(size);
-   cout<<m<<"\n";
-    
-    for (int j = 0; j < 100000; j++){
+    static LockType* m = new LockType(size); // here we created a common lock object for all the threads (static keyword)
+    // cout<<m<<endl;
+    for (int j = 0; j < lock_overhead; j++){
         m->lock();
-        //critical_section - start
-        int c = 0; 
-        for (int i = 0; i < 100; i++){ 
-        c = c+1; 
-        }  
-        //critical_section - end
+        for (int i = 0; i < critical_section_size; i++){  
+        *counter = (*counter + 1);
+        } 
         m->unlock();
+        
     }
 }
-
-
 
 double runtime_crticalsection(int threadnum, function<void()> func = nullptr ){ 
     vector<thread> threads;
@@ -47,9 +43,11 @@ void use_lock_and_write_to_csv(const string& file_name, const string& lock_name,
 
     int threadnum = 1;
     while (threadnum <= thread_count) {
+        cout<<"no of thread ran: "<<threadnum<<endl;
         double time_lock = runtime_crticalsection(threadnum,  bind(critical_section<LockType>, &threadnum)); 
         lock_latency_file << threadnum << "," << time_lock << "\n";
-        threadnum = threadnum + step;   
+        cout<<(*counter)/(threadnum*lock_overhead)<<endl;  // for checking the lock is working or not
+        threadnum = threadnum + step;    
     }
 
     lock_latency_file.close();

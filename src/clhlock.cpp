@@ -6,6 +6,8 @@
 #include <atomic>
 #include <unistd.h>
 #include <functional>
+#include<mutex>
+mutex z;
 using namespace std;
 
 class Tnode{
@@ -14,6 +16,7 @@ class Tnode{
 
     Tnode(){
         locked = false;
+        
     }
 };
 
@@ -23,22 +26,32 @@ class CLHLock {
     atomic<Tnode*> tail;
     static thread_local atomic<Tnode*> myNode;
     static thread_local atomic<Tnode*> myPred;
+    
+
     int size; // dummy variable just to make all class template standard for initialising the constructor
 
     CLHLock(int* numthread) {
-        tail = new Tnode();
-        myNode.store(new Tnode());
-        myPred.store(nullptr);  
+        tail = new Tnode();  
         size =  *numthread;
-      
         }
+    
+    void init(){
+        myNode.store(new Tnode());
+        myPred.store(nullptr);
+    }
 
     void lock() {
-        Tnode* curr = myNode.load();        
+        init();
+        Tnode* curr = myNode.load();    
         curr->locked = true;
+        // cout<<curr<<endl;
+        // cout<<tail<<endl;
         Tnode* pred = tail.exchange(curr);
+        // cout<<tail<<endl;
+        // cout<<pred<<endl;
         myPred.store(pred);
-        while(pred->locked){};   
+        while(pred->locked){};  
+        
     }
 
     void unlock() {
