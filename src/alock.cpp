@@ -11,13 +11,13 @@ class ALock {
     public:
     static thread_local atomic<int> id;  // id variable local to each thread but global across the object methods as needed
     atomic<int>* tail;
-    bool* flag;
+    atomic<bool*> flag;
     int size;
     
 
     ALock(int* numthread) {
-        size = *numthread;
         tail = new atomic<int>(0);
+        size = *numthread;
         flag = new bool[size]();
         flag[0] = true;
     }

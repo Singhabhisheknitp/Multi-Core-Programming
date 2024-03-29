@@ -24,8 +24,8 @@ class Tnode{
 class CLHLock {
     public:
     atomic<Tnode*> tail;
-    static thread_local atomic<Tnode*> myNode;
-    static thread_local atomic<Tnode*> myPred;
+    thread_local atomic<Tnode*> myNode;
+    thread_local atomic<Tnode*> myPred;
     
 
     int size; // dummy variable just to make all class template standard for initialising the constructor
@@ -44,11 +44,7 @@ class CLHLock {
         init();
         Tnode* curr = myNode.load();    
         curr->locked = true;
-        // cout<<curr<<endl;
-        // cout<<tail<<endl;
         Tnode* pred = tail.exchange(curr);
-        // cout<<tail<<endl;
-        // cout<<pred<<endl;
         myPred.store(pred);
         while(pred->locked){};  
         

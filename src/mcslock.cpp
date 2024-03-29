@@ -39,33 +39,36 @@ class MCSLock {
     void lock() {
         init();
         Tnode1* cnode = myNode.load();
-        atomic_thread_fence(memory_order_acquire);
+        // // put a memory fence here below
+        // cout<<cnode<<endl;
+        // cout<<tail<<endl;
+        
         Tnode1* pnode = tail.exchange(cnode);
-        atomic_thread_fence(memory_order_release);
-
-        atomic_thread_fence(memory_order_acquire);
+        // cout<<tail<<endl;
+        // cout<<pnode<<endl;
         if (pnode !=  sentinal) {
-        cout<<"check1"<<endl;
+        // cout<<"check1"<<endl;
         cnode->wait = true;
-        cout<<"check2"<<endl;
-        cout<<pnode<<endl;
+        // cout<<"check2"<<endl;
+        // cout<<pnode<<"after tail exchnage"<<endl;
         pnode->next = cnode;
-        cout<<"check3"<<endl;
-        atomic_thread_fence(memory_order_release);
+        // cout<<"check3"<<endl;
         while(cnode->wait){}
-        cout<<"lock acquired"<<endl;
+        // cout<<"lock acquired"<<endl;
         } 
     }
 
     void unlock() {
         Tnode1* cnode = myNode.load();
+        cout<<cnode<<endl;
         if (cnode->next == nullptr) {
         if (tail.compare_exchange_strong(cnode, nullptr)) 
         {return;}
         while(cnode->next == nullptr){};
         cnode->next->wait = false;
         cnode->next = nullptr;
-        }
+        
+        } 
 
     }
 };
