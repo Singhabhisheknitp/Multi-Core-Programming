@@ -1,6 +1,4 @@
-g++ main.cpp -o run
+rm rf benchmarking/*.csv
+rm rf benchmarking/*.png
+g++ -o run main.cpp src/clhlock.cpp src/ttaslock.cpp 
 ./run
-echo "Data Generated"
-python3 mergecsv.py
-python3 plot.py
-

@@ -1,45 +1,32 @@
-#include<iostream>
-#include<thread>
-#include<mutex>
-#include <vector>
-#include <chrono>
-#include <fstream>
-#include <atomic>
-#include <unistd.h>
+
+
 using namespace std;
-class ALock {
-    public:
-    static thread_local atomic<int> id;  // id variable local to each thread but global across the object methods as needed
-    atomic<int>* tail;
-    atomic<bool*> flag;
-    int size;
-    
 
-    ALock(int* numthread) {
-        tail = new atomic<int>(0);
-        size = *numthread;
-        flag = new bool[size]();
-        flag[0] = true;
-    }
+thread_local std::atomic<int> ALock::id(0);
 
-    void init() {
-        id.store(0);
-    }
-    void lock() {
-        init();
-        int slot = tail->fetch_add(1);
-        id.store(slot);
-        while (!flag[slot]) {}
-    }
+ALock::ALock(int* numthread) {
+    tail = new std::atomic<int>(0);
+    size = *numthread;
+    flag = new std::atomic<bool>[size]();
+    flag[0].store(true);
+}
 
-    void unlock() {
-        int slot = id.load();
-        flag[slot] = false;
-        flag[(slot + 1)] = true;
-        }       
-};
+void ALock::init() {
+    id.store(0);
+}
 
-thread_local atomic<int> ALock::id(0);
+void ALock::lock() {
+    init();
+    int slot = tail->fetch_add(1);
+    id.store(slot);
+    while (!flag[slot].load()) {}
+}
+
+void ALock::unlock() {
+    int slot = id.load();
+    flag[slot].store(false);
+    flag[(slot + 1) % size].store(true);
+}
 
 
 
