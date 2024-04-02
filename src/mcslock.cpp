@@ -1,11 +1,15 @@
-#include "include/mcslock.h"
+#include "../include/mcslock.h"
 
 thread_local std::atomic<Tnode1*> MCSLock::myNode;
-Tnode1* MCSLock::sentinal;
+// Tnode1* MCSLock::sentinal;
+Tnode1::Tnode1() {
+    wait.store(false);
+    next = nullptr;
+}
 
 MCSLock::MCSLock(int* numthread) {
-    sentinal= new Tnode1();
-    tail.store(sentinal);
+    // sentinal= new Tnode1();
+    tail.store(nullptr);
     size =  *numthread;
 }
 
@@ -17,7 +21,7 @@ void MCSLock::lock() {
     init();
     Tnode1* cnode = myNode.load();  
     Tnode1* pnode = tail.exchange(cnode);
-    if (pnode !=  sentinal) {
+    if (pnode !=  nullptr) {
         cnode->wait = true;
         pnode->next = cnode;
         while(cnode->wait){}
@@ -30,7 +34,7 @@ void MCSLock::unlock() {
         if (tail.compare_exchange_strong(cnode, nullptr)) 
         {return;}
         while(cnode->next == nullptr){};
-        cnode->next->wait = false;
+        (*cnode->next).wait = false;
         cnode->next = nullptr;
     } 
 }

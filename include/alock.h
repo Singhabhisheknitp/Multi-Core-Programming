@@ -1,20 +1,18 @@
 #pragma once
 #include <atomic>
-#include <thread>
 #include <iostream>
+using namespace std;
 
 class ALock {
 public:
-    static thread_local std::atomic<int> id;
-    std::atomic<int>* tail;
-    std::atomic<bool>* flag;
-    int size;
-
     ALock(int* numthread);
-
     void init();
-
     void lock();
-
     void unlock();
+
+private:
+    static thread_local std::atomic<int> id;
+    atomic<int> tail;
+    atomic<bool>* flag;
+    int size;
 };

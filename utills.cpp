@@ -9,20 +9,25 @@
 #include <functional>
 
 using namespace std;
-int critical_section_size = 1000000;
-int lock_overhead = 15;
+int critical_section_size = 1;
+int lock_overhead = 1;
 int* counter = new int(0);
+
+
 
 template <class LockType>
 void critical_section(int* size) {
     static LockType* m = new LockType(size); 
+    // cout<<m<<endl;
 
     for (int j = 0; j < lock_overhead; j++){
         m->lock();
-
+        
+        //CRITICAL SECTION
         for (int i = 0; i < critical_section_size; i++){ 
              *counter = (*counter + 1);
              }
+        //CRITICAL SECTION
 
         m->unlock();   
         
@@ -35,8 +40,13 @@ double runtime_crticalsection(int threadnum, function<void()> func = nullptr ){
     auto start = chrono::high_resolution_clock::now(); // START 
     for(int i = 1; i <= threadnum; i++) {threads.push_back(thread(func));}
     for(auto& thread : threads) {thread.join();}
-    cout<<"counter increased by "<<threadnum<<" nos. threads for million times each: "<<*counter<<endl;
-    *counter = 0; // reset counter 
+
+
+    // // LOCK CHECK MECHANISM 
+    // cout<<"counter increased by "<<threadnum<<" nos. threads for million times each: "<<*counter<<endl;
+    // *counter = 0; // reset counter 
+    // // LOCK CHECK MECHANISM
+
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<double> elapsed = end - start;// END
     return elapsed.count()/threadnum;

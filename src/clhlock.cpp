@@ -1,4 +1,5 @@
 #include "../include/clhlock.h"
+#include <iostream>
 
 thread_local std::atomic<Tnode*> CLHLock::myNode;
 thread_local std::atomic<Tnode*> CLHLock::myPred;
