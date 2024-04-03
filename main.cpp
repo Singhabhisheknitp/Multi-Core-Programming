@@ -7,8 +7,8 @@
 
 
 int main(){
-    int thread_count = 100;
-    int step = 5;
+    int thread_count = 10;
+    int step = 1;
 
     
     use_lock_and_write_to_csv<TASLock>( "tas.csv", "taslock", step, thread_count);
