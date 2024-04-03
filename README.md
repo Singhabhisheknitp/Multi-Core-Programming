@@ -7,7 +7,7 @@ This project deals with with implemmenting 5 fundamental spin locks and comaprin
 How to check
 1. clone the repo to your local folder
 2. run the script file in the terminal ./run.sh (this should be done on linux based system which have gcc compiler)
-3. After step 2 5 csv files each for different lock with generate in benchmarking folder
+3. After step 2 5 nos. csv files each for different lock with generate in benchmarking folder and this would also delete if any old files exist in benchmarking folder from earlier runs
 4. after step 3 run the command python3 merge.py 
 5. This will generate benchmarking.csv file in benchmarking folder, which will basically concatenate all the indivisual csv files 
 6. run the command python3 plot.py, this will generaete png file in the benchmarking folder

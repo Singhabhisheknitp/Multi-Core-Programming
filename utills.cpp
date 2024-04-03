@@ -43,7 +43,7 @@ double runtime_crticalsection(int threadnum, function<void()> func = nullptr ){
 
 
     // LOCK CHECK MECHANISM 
-    cout<<"counter increased by "<<threadnum<<" nos. threads for million times each: "<<(*counter)/(lock_overhead*critical_section_size)<<endl;
+    cout<<"counter increased by "<<threadnum<<" nos. threads for million times each: "<<(*counter)<<endl;
     *counter = 0; // reset counter 
     // LOCK CHECK MECHANISM
 
