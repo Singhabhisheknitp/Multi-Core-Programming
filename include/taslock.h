@@ -1,6 +1,7 @@
 #pragma once
 #include <atomic>
 #include <iostream>
+using namespace std;
 class TASLock {
 public:
     std::atomic<bool> state;

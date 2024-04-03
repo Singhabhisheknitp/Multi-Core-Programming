@@ -1,40 +1,56 @@
 #include "../include/mcslock.h"
 
-thread_local std::atomic<Tnode1*> MCSLock::myNode;
-// Tnode1* MCSLock::sentinal;
+thread_local Tnode1* MCSLock::myNode;
 Tnode1::Tnode1() {
-    wait.store(false);
+    locked = false;
     next = nullptr;
 }
 
 MCSLock::MCSLock(int* numthread) {
-    // sentinal= new Tnode1();
     tail.store(nullptr);
     size =  *numthread;
 }
 
 void MCSLock::init(){
-    myNode.store(new Tnode1());
+    myNode = new Tnode1();
+    // cout<<myNode<<endl;
 }
 
 void MCSLock::lock() {
     init();
-    Tnode1* cnode = myNode.load();  
-    Tnode1* pnode = tail.exchange(cnode);
-    if (pnode !=  nullptr) {
-        cnode->wait = true;
-        pnode->next = cnode;
-        while(cnode->wait){}
+    Tnode1* curr = myNode;  
+    Tnode1* pred = tail.exchange(curr);
+
+    // cout<<tail<<endl;
+    // cout<<pred<<endl;
+   
+    if (pred !=  nullptr) {
+        curr->locked = true;
+        // cout<<"please check"<<"\n";
+        // cout<<curr->locked<<"\n";
+        pred->next = curr;
+        while(curr->locked){}
     } 
+    // cout<<"first thread gone without setting its lock field true as its first"<<"\n";
 }
 
+
 void MCSLock::unlock() {
-    Tnode1* cnode = myNode.load();
-    if (cnode->next == nullptr) {
-        if (tail.compare_exchange_strong(cnode, nullptr)) 
-        {return;}
-        while(cnode->next == nullptr){};
-        (*cnode->next).wait = false;
-        cnode->next = nullptr;
+    Tnode1* curr = myNode;
+    // cout<<curr->locked<<"\n";
+    // cout<<curr->next<<"\n";
+    
+    if (curr->next == nullptr) {
+        if (tail.compare_exchange_strong(curr, nullptr)) {
+        // cout<<"lock released 1"<<endl;
+        return;
+        }
+        while(curr->next == nullptr){};
+       
+        
+    
     } 
+    curr->next->locked = false;
+    curr->next = nullptr;
+    // cout<<"check lock released"<<endl;
 }

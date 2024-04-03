@@ -9,19 +9,19 @@
 #include <functional>
 
 using namespace std;
-int critical_section_size = 1;
-int lock_overhead = 1;
+int critical_section_size = 100;
+int lock_overhead = 100;
 int* counter = new int(0);
 
 
 
 template <class LockType>
-void critical_section(int* size) {
-    static LockType* m = new LockType(size); 
-    // cout<<m<<endl;
+void critical_section(LockType* m ) {
+    
 
     for (int j = 0; j < lock_overhead; j++){
         m->lock();
+        // cout<<m<<endl;
         
         //CRITICAL SECTION
         for (int i = 0; i < critical_section_size; i++){ 
@@ -42,10 +42,10 @@ double runtime_crticalsection(int threadnum, function<void()> func = nullptr ){
     for(auto& thread : threads) {thread.join();}
 
 
-    // // LOCK CHECK MECHANISM 
-    // cout<<"counter increased by "<<threadnum<<" nos. threads for million times each: "<<*counter<<endl;
-    // *counter = 0; // reset counter 
-    // // LOCK CHECK MECHANISM
+    // LOCK CHECK MECHANISM 
+    cout<<"counter increased by "<<threadnum<<" nos. threads for million times each: "<<(*counter)/(lock_overhead*critical_section_size)<<endl;
+    *counter = 0; // reset counter 
+    // LOCK CHECK MECHANISM
 
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<double> elapsed = end - start;// END
@@ -60,9 +60,11 @@ void use_lock_and_write_to_csv(const string& file_name, const string& lock_name,
 
     int threadnum = 1;
     while (threadnum <= thread_count) {
-        double time_lock = runtime_crticalsection(threadnum,  bind(critical_section<LockType>, &threadnum)); 
+        LockType* m = new LockType(&threadnum); 
+        double time_lock = runtime_crticalsection(threadnum,  bind(critical_section<LockType>, m)); 
         lock_latency_file << threadnum << "," << time_lock << "\n";
-        threadnum = threadnum + step;    
+        threadnum = threadnum + step; 
+        delete m;   
     }
 
     lock_latency_file.close();

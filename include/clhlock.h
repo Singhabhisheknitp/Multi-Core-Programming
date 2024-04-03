@@ -2,6 +2,7 @@
 #include <atomic>
 #include <thread>
 #include <iostream>
+using namespace  std;
 
 class Tnode {
 public:
@@ -13,8 +14,8 @@ public:
 class CLHLock {
 public:
     std::atomic<Tnode*> tail;
-    static thread_local  std::atomic<Tnode*> myNode;
-    static thread_local std::atomic<Tnode*> myPred;
+    static thread_local  Tnode* myNode;
+    static thread_local  Tnode* myPred;
     int size; // dummy variable just to make all class template standard for initialising the constructor
 
     CLHLock(int* numthread);

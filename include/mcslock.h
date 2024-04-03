@@ -6,8 +6,8 @@ using namespace std;
 
 class Tnode1 {
 public:
-    atomic<bool> wait;
-    atomic<Tnode1*> next;
+    bool locked;
+    Tnode1* next;
 
     Tnode1();
 };
@@ -15,8 +15,7 @@ public:
 class MCSLock {
 public:
     atomic<Tnode1*> tail;
-    // static Tnode1* sentinal;
-    static thread_local std::atomic<Tnode1*> myNode;
+    static thread_local Tnode1* myNode;
     int size; // dummy variable just to make all class template standard for initialising the constructor
 
     MCSLock(int* numthread);

@@ -20,16 +20,16 @@ void ALock::init() {
 
 void ALock::lock() {
     init(); // to initialise thread local variable
-    int slot = tail.fetch_add(1);
-    cout<<tail<<endl;
+    int slot = tail.fetch_add(1)%size;
     id.store(slot);
+    // cout<<id<<endl;
     while (!flag[slot].load()) {}
 }
 
 void ALock::unlock() {
     int slot = id.load();
     flag[slot].store(false);
-    flag[(slot + 1)].store(true);
+    flag[(slot + 1)%size].store(true);
 }
 
 

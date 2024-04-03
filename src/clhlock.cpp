@@ -1,8 +1,8 @@
 #include "../include/clhlock.h"
 #include <iostream>
 
-thread_local std::atomic<Tnode*> CLHLock::myNode;
-thread_local std::atomic<Tnode*> CLHLock::myPred;
+thread_local Tnode* CLHLock::myNode;
+thread_local Tnode*CLHLock::myPred;
 
 Tnode::Tnode() {
     locked = false;
@@ -14,22 +14,22 @@ CLHLock::CLHLock(int* numthread) {
 }
 
 void CLHLock::init(){
-    myNode.store(new Tnode());
-    myPred.store(nullptr);
+    myNode = new Tnode();
+    myPred = (nullptr);
 }
 
 void CLHLock::lock() {
     init();
-    Tnode* curr = myNode.load();    
+    Tnode* curr = myNode;  
     curr->locked = true;
     Tnode* pred = tail.exchange(curr);
-    myPred.store(pred);
+    myPred= pred;
     while(pred->locked){};  
 }
 
 void CLHLock::unlock() {
-    Tnode* curr = myNode.load();
+    Tnode* curr = myNode;
     curr->locked = false;
-    myNode.store(myPred.load());    
+    myNode = (myPred);    
 }
 

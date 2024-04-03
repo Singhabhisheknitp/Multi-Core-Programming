@@ -53,10 +53,10 @@ public:
         }
 
         void func(){
-            int a = 0;
-            int* z = &a;
+            int* a =  new int(5);
+            int* b =  new int(7);
             m2.lock();   
-            cout<<z<<endl;
+            cout<<a<<endl;
             m2.unlock();
            
         }
