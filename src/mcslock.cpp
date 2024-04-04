@@ -20,10 +20,6 @@ void MCSLock::lock() {
     init();
     Tnode1* curr = myNode;  
     Tnode1* pred = tail.exchange(curr);
-
-    // cout<<tail<<endl;
-    // cout<<pred<<endl;
-   
     if (pred !=  nullptr) {
         curr->locked = true;
         pred->next = curr;
@@ -40,9 +36,7 @@ void MCSLock::unlock() {
         return;
         }
         while(curr->next == nullptr){};
-       
-        
-    
+
     } 
     curr->next->locked = false;
     curr->next = nullptr;
