@@ -26,23 +26,17 @@ void MCSLock::lock() {
    
     if (pred !=  nullptr) {
         curr->locked = true;
-        // cout<<"please check"<<"\n";
-        // cout<<curr->locked<<"\n";
         pred->next = curr;
         while(curr->locked){}
     } 
-    // cout<<"first thread gone without setting its lock field true as its first"<<"\n";
+
 }
 
 
 void MCSLock::unlock() {
     Tnode1* curr = myNode;
-    // cout<<curr->locked<<"\n";
-    // cout<<curr->next<<"\n";
-    
     if (curr->next == nullptr) {
         if (tail.compare_exchange_strong(curr, nullptr)) {
-        // cout<<"lock released 1"<<endl;
         return;
         }
         while(curr->next == nullptr){};
@@ -52,5 +46,4 @@ void MCSLock::unlock() {
     } 
     curr->next->locked = false;
     curr->next = nullptr;
-    // cout<<"check lock released"<<endl;
 }

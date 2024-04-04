@@ -11,8 +11,8 @@ public:
     void unlock();
 
 private:
-    static thread_local std::atomic<int> id;
+    static thread_local int id;
     atomic<int> tail;
-    atomic<bool>* flag;
+    bool* flag;
     int size;
 };

@@ -9,8 +9,8 @@
 #include <functional>
 
 using namespace std;
-int critical_section_size = 1000000;
-int lock_overhead = 100;
+int critical_section_size = 10000000;
+int lock_overhead = 1;
 int* counter = new int(0);
 
 
