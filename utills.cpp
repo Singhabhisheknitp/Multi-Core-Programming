@@ -9,7 +9,7 @@
 #include <functional>
 
 using namespace std;
-long int critical_section_size = 10000000;
+long int critical_section_size = 10000;
 int lock_overhead = 1;
 int* counter = new int(0);
 
@@ -55,8 +55,7 @@ double runtime_crticalsection(int threadnum, function<void()> func = nullptr ){
 
 template <class LockType>
 void use_lock_and_write_to_csv(const string& file_name, const string& lock_name, int step = 4, int thread_count = 40) {
-    string path = string("/mnt/c/COL818/Multi-Core-Programming/benchmarking") + "/" + file_name; 
-    ofstream lock_latency_file(path);   
+    ofstream lock_latency_file("benchmarking/" + file_name);   
     lock_latency_file << "T, Time_" << lock_name << "\n";
 
     int threadnum = 1;
