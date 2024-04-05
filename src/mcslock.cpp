@@ -1,29 +1,23 @@
 #include "../include/mcslock.h"
 
-thread_local Tnode1* MCSLock::myNode;
+thread_local Tnode1* MCSLock::myNode = new Tnode1();
 Tnode1::Tnode1() {
-    locked = false;
+    locked.store(false);
     next = nullptr;
 }
 
 MCSLock::MCSLock(int* numthread) {
     tail.store(nullptr);
-    size =  *numthread;
-}
-
-void MCSLock::init(){
-    myNode = new Tnode1();
-    // cout<<myNode<<endl;
+    size =  *numthread;// dummy varibale just to keep constructor call of all lock onject similar
 }
 
 void MCSLock::lock() {
-    init();
     Tnode1* curr = myNode;  
     Tnode1* pred = tail.exchange(curr);
     if (pred !=  nullptr) {
-        curr->locked = true;
-        pred->next = curr;
-        while(curr->locked){}
+        curr->locked.store(true);
+        pred->next.store(curr);
+        while(curr->locked.load()){}
     } 
 
 }
@@ -31,13 +25,15 @@ void MCSLock::lock() {
 
 void MCSLock::unlock() {
     Tnode1* curr = myNode;
-    if (curr->next == nullptr) {
+    Tnode1* succ = curr->next.load();
+    if (succ == nullptr) {
         if (tail.compare_exchange_strong(curr, nullptr)) {
         return;
         }
-        while(curr->next == nullptr){};
+        
+        while(succ == nullptr){};
 
     } 
-    curr->next->locked = false;
+    succ->locked.store(false);
     curr->next = nullptr;
 }

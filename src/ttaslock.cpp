@@ -4,7 +4,7 @@ using namespace std;
 
 TTASLock::TTASLock(int* numthread) {
     state =false ;
-    size =  *numthread;
+    size =  *numthread;// this is dummy variable just to keep all the locks constructor call of same function signature while creating a template lock object 
 }
 
 void TTASLock::lock() {

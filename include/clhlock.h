@@ -6,7 +6,7 @@ using namespace  std;
 
 class Tnode {
 public:
-    std::atomic<bool> locked;
+    atomic<bool> locked;
 
     Tnode();
 };
@@ -19,8 +19,6 @@ public:
     int size; // dummy variable just to make all class template standard for initialising the constructor
 
     CLHLock(int* numthread);
-
-    void init();
 
     void lock();
 

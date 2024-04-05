@@ -6,9 +6,8 @@ using namespace std;
 
 class Tnode1 {
 public:
-    bool locked;
-    Tnode1* next;
-
+    atomic<bool> locked;
+    atomic<Tnode1*> next;
     Tnode1();
 };
 
@@ -19,10 +18,6 @@ public:
     int size; // dummy variable just to make all class template standard for initialising the constructor
 
     MCSLock(int* numthread);
-
-    void init();
-
     void lock();
-
     void unlock();
 };

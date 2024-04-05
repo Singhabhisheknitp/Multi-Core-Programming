@@ -9,14 +9,14 @@
 #include <functional>
 
 using namespace std;
-int critical_section_size = 10000000;
+long int critical_section_size = 10000000;
 int lock_overhead = 1;
 int* counter = new int(0);
 
 
 
 template <class LockType>
-void critical_section(LockType* m ) {
+void critical_section(LockType* m, int threadnum ) {
     
     
 
@@ -25,7 +25,7 @@ void critical_section(LockType* m ) {
         // cout<<m<<endl;
         
         //CRITICAL SECTION
-        for (int i = 0; i < critical_section_size; i++){ 
+        for (int i = 0; i < (critical_section_size); i++){ 
              *counter = (*counter + 1);
              }
         //CRITICAL SECTION
@@ -62,7 +62,7 @@ void use_lock_and_write_to_csv(const string& file_name, const string& lock_name,
     int threadnum = 1;
     while (threadnum <= thread_count) {
         LockType* m = new LockType(&threadnum); 
-        double time_lock = runtime_crticalsection(threadnum,  bind(critical_section<LockType>, m)); 
+        double time_lock = runtime_crticalsection(threadnum,  bind(critical_section<LockType>, m, threadnum)); 
         lock_latency_file << threadnum << "," << time_lock << "\n";
         threadnum = threadnum + step; 
         delete m;   

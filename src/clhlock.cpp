@@ -1,8 +1,8 @@
 #include "../include/clhlock.h"
 #include <iostream>
 
-thread_local Tnode* CLHLock::myNode;
-thread_local Tnode*CLHLock::myPred;
+thread_local Tnode* CLHLock::myNode = new Tnode();
+thread_local Tnode*CLHLock::myPred = nullptr;
 
 Tnode::Tnode() {
     locked = false;
@@ -13,23 +13,18 @@ CLHLock::CLHLock(int* numthread) {
     size =  *numthread;
 }
 
-void CLHLock::init(){
-    myNode = new Tnode();
-    myPred = (nullptr);
-}
 
 void CLHLock::lock() {
-    init();
     Tnode* curr = myNode;  
-    curr->locked = true;
+    curr->locked.store(true);
     Tnode* pred = tail.exchange(curr);
     myPred= pred;
-    while(pred->locked){};  
+    while(pred->locked.load()){};  
 }
 
 void CLHLock::unlock() {
     Tnode* curr = myNode;
-    curr->locked = false;
-    myNode = (myPred);    
+    curr->locked.store(false);
+    myNode = myPred;    
 }
 

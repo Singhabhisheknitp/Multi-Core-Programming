@@ -25,10 +25,10 @@ styles = ['*-', 'o-', 'x-', '+-', 's-']
 
 ax = df.plot(x=columns[0], y=columns[1:], kind='line', linewidth=3, style=styles[:columns_num], markersize=8)
 
-plt.title('Thread vs latency', fontsize=7)
-plt.xlabel('Number of threads', fontsize=7)
-plt.ylabel('Time elapsed', fontsize=7)
-ax.legend(df.columns[1: ], fontsize=7)
+plt.title('Thread vs latency', fontsize=8)
+plt.xlabel('Number of threads', fontsize=8)
+plt.ylabel('Time elapsed', fontsize=8)
+ax.legend(df.columns[1: ], fontsize=8)
 plt.grid(True)
 
 plt.savefig('benchmarking/plot.pdf', format='pdf')
