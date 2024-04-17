@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <functional>
 #include "src/msqueue.cpp"
+#include "src/twolockqueue.cpp"
 using namespace std;
 constexpr int OPERATIONS_PER_THREAD = 1000000;  
 
@@ -46,6 +47,5 @@ void logger(const string& file_name, const string& queue_name, int step = 1, int
         lock_latency_file << threadnum << "," << time_queue<< "\n";
         threadnum = threadnum + step;   
     }
-
     lock_latency_file.close();
 }
