@@ -40,4 +40,41 @@ public:
           
     }
 
+    T dequeue() {
+       while(true){
+        Node* front = head.load();
+        Node* last = tail.load();
+        Node* second = front->prev; // second just next to head
+        if(front == head.load()){
+            if(front != last){
+                if (second == nullptr) {
+                    fixlist(front, last);
+                    continue;    
+                }else{
+                    T value = second->value;
+                    if(head.compare_exchange_weak(front, second)){
+                        delete last;
+                        return value;
+                    }
+                }
+            }else{
+                return 0;
+            }
+
+        }
+
+      }
+    }
+
+    void fixlist(Node* front, Node* last){
+       Node* curr = last;
+       Node* succ;
+       while(front == head.load() && curr != front){
+           succ = curr->next;
+           succ->prev = curr;
+           curr = succ;
+       }
+    }
+
+
 }; 

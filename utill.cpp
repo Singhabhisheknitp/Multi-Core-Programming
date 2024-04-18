@@ -11,15 +11,15 @@
 #include "src/twolockqueue.cpp"
 #include "src/optimistic.cpp"
 using namespace std;
-constexpr int OPERATIONS_PER_THREAD = 1000000;  
+constexpr int OPERATIONS_PER_THREAD = 100;  
 
 
 template <class Queue>
 void threadWork(Queue& queue, int threadnum) {
     int ceiling = (OPERATIONS_PER_THREAD + threadnum - 1) / threadnum;
-    for (int i = 0; i < ceiling; ++i) {
+    for (int i = 1; i < ceiling; i++) {
         queue.enqueue(i);
-        // queue.dequeue();
+        queue.dequeue();
     }
 }
 
