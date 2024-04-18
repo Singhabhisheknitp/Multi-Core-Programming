@@ -53,7 +53,6 @@ public:
                 }else{
                     T value = second->value;
                     if(head.compare_exchange_weak(front, second)){
-                        delete last;
                         return value;
                     }
                 }

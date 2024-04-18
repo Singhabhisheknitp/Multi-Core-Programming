@@ -11,7 +11,7 @@
 #include "src/twolockqueue.cpp"
 #include "src/optimistic.cpp"
 using namespace std;
-constexpr int OPERATIONS_PER_THREAD = 100;  
+constexpr int OPERATIONS_PER_THREAD = 1000000;  
 
 
 template <class Queue>
