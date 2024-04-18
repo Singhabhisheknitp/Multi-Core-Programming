@@ -1,5 +1,4 @@
 #include<atomic>
-// #include"hazard_pointer.h"
 
 template<typename T>
 class MSqueue {
