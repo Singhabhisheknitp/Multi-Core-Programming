@@ -19,7 +19,7 @@ void threadWork(Queue& queue, int threadnum) {
     int ceiling = (OPERATIONS_PER_THREAD + threadnum - 1) / threadnum;
     for (int i = 1; i < ceiling; i++) {
         queue.enqueue(i);
-        queue.dequeue();
+        // queue.dequeue();
     }
 }
 
