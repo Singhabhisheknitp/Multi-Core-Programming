@@ -5,7 +5,7 @@ using namespace std;
 
 template<typename T>
 struct TaggedPtr {
-    uintptr_t ptr;  // Lower 48 bits for the pointer, upper 16 bits for the tag
+    uintptr_t ptr;  // full 64 bit pointer
 
     static constexpr uintptr_t PTR_MASK = 0x0000FFFFFFFFFFFF;
     static constexpr uintptr_t TAG_MASK = 0xFFFF000000000000;
@@ -43,7 +43,7 @@ struct Node {
     T value;
     TaggedPtr<Node<T>> next;
 
-    Node(T val) : value(val) {}
+    Node(T val) : value(val), next(nullptr, 0) {}
 };
 
 template<typename T>
@@ -54,24 +54,19 @@ struct MSQueue {
     MSQueue() {
         Node<T>* dummy = new Node<T>(0);
         TaggedPtr<Node<T>> tp(dummy);
-        Head = (tp);
-        Tail = (tp);
+        Head = tp;
+        Tail = tp;
     }
 
     void enqueue(T value) {
        
         Node<T>* node = new Node<T>(value);
         TaggedPtr<Node<T>> tail, next;
-        
-
         while (true) {
-            // cout<<Tail.ptr<<endl;
-            TaggedPtr<Node<T>> tail(Tail);
-            TaggedPtr<Node<T>> next(tail.getPtr()->next);
-            // cout<<"Enqueueing "<<value<<endl;
-            
-            if (tail.ptr == Tail.ptr) { // Check consistency
-                if (next.getPtr() == nullptr) { // Tail is pointing to the last node
+            tail= Tail;
+            next = tail.getPtr()->next;  
+            if (tail.ptr == Tail.ptr) { 
+                if (next.getPtr() == nullptr) { 
                     if (cas(&(tail.getPtr()->next), TaggedPtr<Node<T>>(nullptr, next.getTag()), TaggedPtr<Node<T>>(node, next.getTag() + 1))) {
                         cas(&Tail, tail, TaggedPtr<Node<T>>(node, tail.getTag() + 1));
                         break;
@@ -83,5 +78,27 @@ struct MSQueue {
         }
 
         
+    }
+    void dequeue(){
+        while(true){
+            TaggedPtr<Node<T>> head = Head;
+            TaggedPtr<Node<T>> tail = Tail;
+            TaggedPtr<Node<T>> next = head.getPtr()->next;
+            if(head.ptr == Head.ptr){
+                if(head.ptr == tail.ptr){
+                    if(next.getPtr() == nullptr){
+                        cout << "queue empty" << endl;
+                        return;
+                    }
+                    cas(&Tail, tail, TaggedPtr<Node<T>>(next.getPtr(), tail.getTag() + 1)); //meaning some node is added to tail.next so tail is lagging by one node swing to update that
+                } else {
+                    T value = next.getPtr()->value;
+                    if(cas(&Head, head, TaggedPtr<Node<T>>(next.getPtr(), head.getTag() + 1))){
+                        
+                        return;
+                    }
+                }
+            }
+        }
     }
 };

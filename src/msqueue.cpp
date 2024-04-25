@@ -2,23 +2,6 @@
 #include<bitset>
 
 
-template<typename T>
-struct tagptr {
-    uintptr_t ptr;
-    uintptr_t tag;
-    uintptr_t lptr;
-
-    tagptr(T node) {
-        uintptr_t address = reinterpret_cast<uintptr_t>(node);
-        uintptr_t p = (address & 0x0000FFFFFFFFFFFF); 
-        tag = ((address & 0xFFFF000000000000)>>48); 
-        ptr = reinterpret_cast<T>(p); 
-        lptr = reinterpret_cast<T>(p | (tag << 48);
-    }
-
-    
-};
-
 
 template<typename T>
 class MSqueue {
