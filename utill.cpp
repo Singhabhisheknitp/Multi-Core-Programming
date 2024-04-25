@@ -7,11 +7,11 @@
 #include <atomic>
 #include <unistd.h>
 #include <functional>
-#include "src/msqueue.cpp"
+#include "extra.cpp"
 #include "src/twolockqueue.cpp"
 #include "src/optimistic.cpp"
 using namespace std;
-constexpr int OPERATIONS_PER_THREAD = 1000000;  
+constexpr int OPERATIONS_PER_THREAD = 65000;  
 
 
 template <class Queue>

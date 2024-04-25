@@ -67,30 +67,30 @@ public:
         }
     }
 
-//     T dequeue() {
-//         while(true){
-//         Node* front = Head.load();
-//         Node* lastnode = Tail.load();
-//         Node* next = front->next.load();
-//         if (front == Head.load()) {
-//             if (front == lastnode) {
-//                 if (next == nullptr) {
-//                     return false;
-//                 }
-//                 else {
-//                     Tail.compare_exchange_weak(lastnode, next);  // if front & lastnode same without next being null pointer,
-//                                                             // then just one node added halfway and Tail field not updated
-//                                                            //hence helping other as typical lockfree pattern
-//                 }
+    T dequeue() {
+        while(true){
+        Node* front = Head.load();
+        Node* lastnode = Tail.load();
+        Node* next = front->next.load();
+        if (front == Head.load()) {
+            if (front == lastnode) {
+                if (next == nullptr) {
+                    return false;
+                }
+                else {
+                    Tail.compare_exchange_weak(lastnode, next);  // if front & lastnode same without next being null pointer,
+                                                            // then just one node added halfway and Tail field not updated
+                                                           //hence helping other as typical lockfree pattern
+                }
                 
-//             } else {
-//                 T value = next->value;
-//                 if (Head.compare_exchange_weak(front, next)) {
-//                     return value;
-//                 }
-//             }
-//         }
-//     }
+            } else {
+                T value = next->value;
+                if (Head.compare_exchange_weak(front, next)) {
+                    return value;
+                }
+            }
+        }
+    }
 
-//  }
+ }
 }; 

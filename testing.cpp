@@ -1,44 +1,51 @@
 #include <iostream>
 #include <atomic>
-#include <typeinfo>
+#include <cstdint>
 using namespace std;
-
-template<typename T>
-struct tagptr {
-    uintptr_t ptr;
-    uintptr_t tag;
-    uintptr_t whole;
-
-    tagptr(T node) {
-        uintptr_t address = reinterpret_cast<uintptr_t>(std::addressof(*node));
-        ptr =  (address & 0x0000FFFFFFFFFFFF); 
-        tag = ((address & 0xFFFF000000000000)>>48); 
-        whole = address;
-    }
-
-    void tagadd(int n) {
-        this->tag = this->tag + n;
-        whole = (ptr | (this->tag << 48));
-    }
-    
-};
 
 template<typename T>
 struct Node {
     T value;
-    tagptr<Node*> next;
-    Node(T value) : value(value), next(nullptr) {}
+    Node<T>* next;
+
+    Node(T val) : value(val), next(nullptr) {}
 };
 
-int main()
-{   tagptr<atomic<Node<int>*>> a (new Node<int>(5));
-    // tagptr<atomic<Node<int>*>> b (a);
-    cout << a.whole << endl;
-    // cout<< b.ptr << endl;
-    a.tagadd(1);
-    cout << a.whole << endl;
-    // cout<< b.ptr<< endl;
-    
-return 0;
+template<typename T>
+bool cas(Node<T>* volatile* addr, Node<T>* oldVal, Node<T>* newVal) {
+    bool result;
+    __asm__ __volatile__ (
+        "lock; cmpxchgq %2, %1\n\t"  // Compare and exchange
+        "sete %0\n\t"                // Set 'result' based on zero flag
+        : "=a" (result),             // Output
+          "+m" (*addr)               // Input/output: memory operand
+        : "r" (newVal),              // Input: new value
+          "a" (oldVal)               // Input: expected old value
+        : "memory", "cc"             // Clobbers
+    );
+    return result;
+}
 
+int main() {
+    Node<int>* a = new Node<int>(5); // Assume a points to Node with value 5
+    Node<int>* b = a; // Assume b points to Node with value 7
+    Node<int>* c = new Node<int>(8); // Assume c points to Node with value 8
+
+    cout<<"a: "<<a<<endl;
+    cout<<"b: "<<b<<endl;
+    cout<<"c: "<<c<<endl;
+
+    // Example usage: Change 'a' to point to 'c' if 'a' currently points to the same Node as 'b'
+    if (cas(&a, b, c)) {
+        std::cout << "CAS succeeded, a now points to new Node with value: " << a->value << std::endl;
+    } else {
+        std::cout << "CAS failed, a still points to Node with value: " << a->value << std::endl;
+    }
+
+
+    cout<<"a: "<<a<<endl;
+    cout<<"b: "<<b<<endl;
+    cout<<"c: "<<c<<endl;
+
+    return 0;
 }
