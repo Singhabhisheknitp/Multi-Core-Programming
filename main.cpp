@@ -8,8 +8,8 @@
 
 
 int main() {
-    int thread_count = 10;
-    int step = 1;
+    int thread_count = 50;
+    int step = 5;
 
     logger<MSqueue<int>>("msqueue.csv", "MSQueue", step, thread_count);
     logger<Twolockqueue<int>>("twolockqueue.csv", "Twolockqueue", step, thread_count);

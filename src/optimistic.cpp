@@ -20,6 +20,7 @@ private:
 
 
 public:
+    atomic<int> fixlistcount = 0;
     OptimisticQueue() {
         Node* dummy = new Node(T());
         head.store(dummy);
@@ -66,6 +67,7 @@ public:
     }
 
     void fixlist(Node* front, Node* last){
+       fixlistcount.fetch_add(1);
        Node* curr = last;
        Node* succ;
        while(front == head.load() && curr != front){
