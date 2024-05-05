@@ -21,6 +21,7 @@ private:
 
 public:
     atomic<int> fixlistcount = 0;
+    atomic<int> failedcas_count = 0;
     OptimisticQueue() {
         Node* dummy = new Node(T());
         head.store(dummy);
@@ -36,6 +37,9 @@ public:
             if (tail.compare_exchange_weak(last, node)) {
                 last->prev = node;
                 return;
+            }
+            else{
+                failedcas_count.fetch_add(1);
             }
         }
           
@@ -75,6 +79,14 @@ public:
            succ->prev = curr;
            curr = succ;
        }
+    }
+
+    void resetFailedCasCount() {
+        failedcas_count.store(0);
+    }
+
+    void resetFixlistCount() {
+        fixlistcount.store(0);
     }
 
 

@@ -1,5 +1,5 @@
 #include<atomic>
-
+using namespace std;
 template<typename T>
 class MSqueue {
 private:
@@ -16,6 +16,7 @@ private:
 
 
 public:
+    atomic<int> failedcas_count = 0;
     MSqueue() {
         Node* dummy = new Node(T());
         head.store(dummy);
@@ -32,11 +33,20 @@ public:
             if (last == tail.load()) {
                 if (next == nullptr) {
                     if (last->next.compare_exchange_weak(next, node)) {
-                        tail.compare_exchange_weak(last, node);
-                        break;
+
+                       if(!tail.compare_exchange_weak(last, node)){
+                        failedcas_count.fetch_add(1);
+                       }
+                        return;
+                      } else{
+                        failedcas_count.fetch_add(1);
+                    
                     }
                 } else {
-                    tail.compare_exchange_weak(last, next);
+                   if(!tail.compare_exchange_weak(last, next))
+                     {
+                      failedcas_count.fetch_add(1);
+                     }
                 }
             }
         }
@@ -68,4 +78,8 @@ public:
     }
 
  }
+
+    void resetFailedCasCount(){
+        failedcas_count.store(0);
+    }
 }; 

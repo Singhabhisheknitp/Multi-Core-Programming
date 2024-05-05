@@ -14,22 +14,57 @@ for file in files:
         df.set_index('No of threads', inplace=True)
         dfs.append(df)
 
-df = pd.concat(dfs, axis=1)
-df.reset_index().to_csv('benchmarking/queueperformance.csv', index=False)
 
 
-##plot the curve
-df = pd.read_csv('benchmarking/queueperformance.csv')
-columns = df.columns.tolist()
-columns_num = len(columns) - 1
-styles = ['*-', 'o-', 'x-', '+-', 's-']
 
-ax = df.plot(x=columns[0], y=columns[1:], kind='line', linewidth=2, style=styles[:columns_num], markersize=8)
+##plot the curve for time performace of the queues
+if dfs:
+    df = pd.concat(dfs, axis=1)
+    df.reset_index().to_csv('benchmarking/queueperformance.csv', index=False)
+    df = pd.read_csv('benchmarking/queueperformance.csv')
+    columns = df.columns.tolist()
+    columns_num = len(columns) - 1
+    styles = ['*-', 'o-', 'x-', '+-', 's-']
+    ax = df.plot(x=columns[0], y=columns[1:], kind='line', linewidth=2, style=styles[:columns_num], markersize=8)
+    plt.title('Thread vs latency', fontsize=8)
+    plt.xlabel('Number of threads', fontsize=8)
+    plt.ylabel('time elapsed', fontsize=8)
+    ax.legend(df.columns[1: ], fontsize=8)
+    plt.grid(True)
+    plt.savefig('benchmarking/plot.pdf', format='pdf')
+    plt.close()
 
-plt.title('Thread vs latency', fontsize=8)
-plt.xlabel('Number of threads', fontsize=8)
-plt.ylabel('time elapsed', fontsize=8)
-ax.legend(df.columns[1: ], fontsize=8)
-plt.grid(True)
 
-plt.savefig('benchmarking/plot.pdf', format='pdf')
+#plotting of fixlistcaller
+plt.figure()
+if os.path.exists('benchmarking/fixlistcaller.csv'):
+    df_fixlist = pd.read_csv('benchmarking/fixlistcaller.csv')
+    df_fixlist.columns = df_fixlist.columns.str.strip()
+    df_fixlist.set_index('No of threads', inplace=True)
+    ax_fixlist = df_fixlist.plot(kind='line', linewidth=2, markersize=8)
+    plt.title('Thread vs Fixlist Calls', fontsize=8)
+    plt.xlabel('Number of threads', fontsize=8)
+    plt.ylabel('Number of Fixlist Calls', fontsize=8)
+    ax_fixlist.legend(df_fixlist.columns, fontsize=8)
+    plt.grid(True)
+    plt.savefig('benchmarking/fixlist_plot.pdf', format='pdf')
+    plt.close()
+
+
+
+#plotting of failedcascounter
+plt.figure()
+if os.path.exists('benchmarking/failedcascounter.csv'):
+    print('voila you are done!')
+    df_failedcas = pd.read_csv('benchmarking/failedcascounter.csv')
+    df_failedcas.columns = df_failedcas.columns.str.strip()
+    df_failedcas.set_index('No of threads', inplace=True)
+    ax_failedcas = df_failedcas.plot(kind='line', linewidth=2, markersize=8)
+    plt.title('Thread vs Failed CAS calls in 1000s', fontsize=8)
+    plt.xlabel('Number of threads', fontsize=8)
+    plt.ylabel('Number of Failed CAS calls', fontsize=8)
+    ax_failedcas.legend(df_failedcas.columns, fontsize=8)
+    plt.grid(True)
+    plt.savefig('benchmarking/failedcas_plot.pdf', format='pdf')
+    
+    
