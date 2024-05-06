@@ -12,9 +12,9 @@ int main() {
     int step = 2;
 
     //queue performance logger
-    // logger<MSqueue<int>>("msqueue.csv", "MSQueue", step, thread_count);
-    // logger<Twolockqueue<int>>("twolockqueue.csv", "Twolockqueue", step, thread_count);
-    // logger<OptimisticQueue<int>>("optimistic.csv", "Optimisticqueue", step, thread_count);
+    // logger<MSqueue<int>>("msqueue.csv", "MSQueue",benchmark1, step, thread_count);
+    // logger<Twolockqueue<int>>("twolockqueue.csv", "Twolockqueue",benchmark1, step, thread_count);
+    // logger<OptimisticQueue<int>>("optimistic.csv", "Optimisticqueue", benchmark1, step, thread_count);
 
 
     //fixlist calls for msqueue
@@ -22,17 +22,10 @@ int main() {
     // fixlistcaller<OptimisticQueue<int>>("enqdeqpair.csv",benchmark1,thread_count, step);
     
 
+    //casfailcounter calls
+    // casfailcounter<MSqueue<int>>("msqueue.csv", benchmark2, thread_count, step);
+    // casfailcounter<OptimisticQueue<int>>("optimistic.csv", benchmark2, thread_count, step);
 
-    casfailcounter<MSqueue<int>>("msqueue.csv", benchmark2, thread_count, step);
-    casfailcounter<OptimisticQueue<int>>("optimistic.csv", benchmark2, thread_count, step);
 
-    
-    // for error plot
-
-    // for (int i = 1; i < 10; i++) {    
-    // errorplot<MSqueue<int>>("msqueue.csv", "MSQueue", step, thread_count, i);
-    // // errorplot<Twolockqueue<int>>("twolockqueue.csv", "Twolockqueue", step, thread_count, i);
-    // // errorplot<OptimisticQueue<int>>("optimistic.csv", "Optimisticqueue", step, thread_count, i);
-    // }
     return 0;
 }

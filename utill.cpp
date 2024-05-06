@@ -13,7 +13,7 @@
 #include "src/optimistic.cpp"
 using namespace std;
 constexpr int OPERATIONS_PER_THREAD = 1000000;  
-constexpr int   OTHER_WORK = 10;
+constexpr int   OTHER_WORK = 100;
 
 
 
@@ -44,7 +44,7 @@ void benchmark2(Queue& queue, int threadnum) {
     std::uniform_int_distribution<> dis(0, 1);  
 
     for (int i = 1; i < ceiling; i++) {
-        int random_number = dis(gen);  // Generate a random number
+        int random_number = dis(gen);  // random number gebration for creating roughly 50% enqueue and 50% dequeue
 
         if (random_number == 0) {
             queue.enqueue(i);
@@ -56,23 +56,6 @@ void benchmark2(Queue& queue, int threadnum) {
     }
 }
 
-template <class Queue>
-void ENQ(Queue& queue, int threadnum) {
-    int ceiling = (OPERATIONS_PER_THREAD ) / threadnum;
-    int x = 0;
-    for (int i = 1; i < ceiling; i++) {
-        queue.enqueue(i);
-    }
-}
-
-template <class Queue>
-void DEQ(Queue& queue, int threadnum) {
-    int ceiling = (OPERATIONS_PER_THREAD ) / threadnum;
-    int x = 0;
-    for (int i = 1; i < ceiling; i++) {
-        queue.dequeue();
-    }
-}
 
 
 template<class Queue>
@@ -89,13 +72,13 @@ double queuetest(void(*benchmark)(Queue&, int),int threadnum, Queue& queue){
 }
 
 template <class Queue>
-void logger(const string& file_name, const string& queue_name, int step = 1, int thread_count = 4) {
+void logger(const string& file_name, const string& queue_name, void (*benchmark)(Queue&, int), int step = 1, int thread_count = 4) {
     ofstream lock_latency_file("benchmarking/" + file_name);   
     lock_latency_file << "No of threads," << queue_name << "\n";
     Queue queue;
     int threadnum = 1;
     while (threadnum <= thread_count) { 
-        double time_queue = queuetest(threadnum,  queue); 
+        double time_queue = queuetest(benchmark, threadnum,  queue); 
         lock_latency_file << threadnum << "," << time_queue<< "\n"; 
         cout<<"work done for : "<<threadnum<<"no of threads"<<endl; 
         threadnum = threadnum + step;     
@@ -149,25 +132,3 @@ void casfailcounter(const string& queuefile_name, void (*benchmark)(Queue&, int)
     
 }
 
-
-
-
-
-
-// to create error plot
-// template <class Queue>
-// void errorplot(const string& file_name, const string& queue_name, int step = 1, int thread_count = 4, int iteration = 1) {
-//     ofstream errorplot("benchmarking/errorplot" + file_name, ios::app);   
-//     errorplot << "No of threads," << queue_name <<", No of iterations"<< "\n";
-//     Queue queue;
-//     int threadnum = 1;
-//     while (threadnum <= thread_count) { 
-//         double time_queue = queuetest(threadnum,  queue); 
-//         errorplot << threadnum << "," << time_queue<<","<< iteration<<"\n"; 
-//         cout<<"work done: "<<(threadnum*100/thread_count)<<"%"<<endl; 
-//         threadnum = threadnum + step; 
-       
-//     }
-//     errorplot.close();
-    
-// }
