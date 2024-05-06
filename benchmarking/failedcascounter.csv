@@ -1,6 +1,6 @@
 No of threads, failedenq CAS _optimistic, failed deq CAS _optimistic, failedenq CAS _msqueue, failed deq CAS _msqueue
 1,0,0,0,0
-2,6,7,11,13
-4,51,77,205,74
-8,256,545,1215,261
-16,153,295,959,215
+2,74,89,81,73
+4,201,348,571,189
+8,316,604,1372,327
+16,226,418,839,241

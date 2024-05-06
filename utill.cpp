@@ -13,7 +13,7 @@
 #include "src/optimistic.cpp"
 using namespace std;
 constexpr int OPERATIONS_PER_THREAD = 1000000;  
-constexpr int   OTHER_WORK = 100;
+constexpr int   OTHER_WORK = 10;
 
 
 
