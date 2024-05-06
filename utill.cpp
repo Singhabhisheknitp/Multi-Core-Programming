@@ -130,16 +130,17 @@ void fixlistcaller(const string& benchmark_filename, void (*benchmark)(Queue&, i
 
 //to count failed CAS this function is used
 template <class Queue>
-void casfailcounter(void (*benchmark)(Queue&, int), int thread_count = 4, int step = 1){
-    ofstream casfailcounter("benchmarking/failedcascounter.csv");
-    casfailcounter << "No of threads, number of failed CAS in 1000s\n";
+void casfailcounter(const string& queuefile_name, void (*benchmark)(Queue&, int), int thread_count = 4, int step = 1){
+    ofstream casfailcounter("benchmarking/failedcascounter" + queuefile_name);
+    casfailcounter << "No of threads, failedenq CAS , failed deq CAS "<< "\n";
     Queue queue;
     int threadnum = 1;
     while (threadnum <= thread_count) { 
-        int count = 0;
         double time_queue = queuetest(benchmark, threadnum,  queue); 
-        count = queue.failedcas_count.load();
-        casfailcounter << threadnum << "," << count*1e-3<< "\n";
+        int count1 = queue.failedcasenq_count.load();
+        int count2 = queue.failedcasdeq_count.load();
+
+        casfailcounter << threadnum << "," << int(count1*1e-3) << ","<<int(count2*1e-3)<< "\n";
         cout<<"work done: "<<threadnum<<endl;
         queue.resetFailedCasCount();
         threadnum = threadnum*step;

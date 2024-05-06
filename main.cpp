@@ -23,7 +23,8 @@ int main() {
     
 
 
-    casfailcounter<MSqueue<int>>(DEQ, thread_count, step);
+    casfailcounter<MSqueue<int>>("msqueue.csv", benchmark2, thread_count, step);
+    casfailcounter<OptimisticQueue<int>>("optimistic.csv", benchmark2, thread_count, step);
 
     
     // for error plot

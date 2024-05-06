@@ -1,6 +1,6 @@
-No of threads, number of failed CAS in 1000s
-1,0
-2,0
-4,0
-8,0
-16,0
+No of threads, failedenq CAS _optimistic, failed deq CAS _optimistic, failedenq CAS _msqueue, failed deq CAS _msqueue
+1,0,0,0,0
+2,72,92,83,71
+4,96,164,531,202
+8,292,520,1126,271
+16,217,385,853,240

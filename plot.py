@@ -64,25 +64,43 @@ if dfs1:
     plt.savefig('benchmarking/fixlist_plot.pdf', format='pdf')
     plt.close()
 
+## merge csv files in the benchmarking folder of failedcascounter
+if os.path.exists('benchmarking/failedcascounteroptimistic.csv'):
+    dfcas1 = pd.read_csv('benchmarking/failedcascounteroptimistic.csv')
+if os.path.exists('benchmarking/failedcascountermsqueue.csv'):
+    dfcas2 = pd.read_csv('benchmarking/failedcascountermsqueue.csv')
+dfs2 = pd.merge(dfcas1, dfcas2, on='No of threads', suffixes=('_optimistic', '_msqueue'))
+dfs2.to_csv('benchmarking/failedcascounter.csv', index=False)
+dfs2 = pd.read_csv('benchmarking/failedcascounter.csv')
+columns = dfs2.columns.tolist()
+columns_num = len(columns) - 1
+styles = ['*-', 'o-', 'x-', '+-', 's-']
+ax = dfs2.plot(x=columns[0], y=columns[1:], kind='line', linewidth=2, style=styles[:columns_num], markersize=8)
+plt.title('Thread vs Failed CAS calls in 1000s', fontsize=8)
+plt.xlabel('Number of threads', fontsize=8)
+plt.ylabel('Number of Failed CAS calls', fontsize=8)
+ax.legend(dfs2.columns[1: ], fontsize=8)
+plt.grid(True)
+plt.savefig('benchmarking/failedcas_plot.pdf', format='pdf')
+plt.close()
 
 
 
 
-
-#plotting of failedcascounter
-plt.figure()
-if os.path.exists('benchmarking/failedcascounter.csv'):
-    print('voila you are done!')
-    df_failedcas = pd.read_csv('benchmarking/failedcascounter.csv')
-    df_failedcas.columns = df_failedcas.columns.str.strip()
-    df_failedcas.set_index('No of threads', inplace=True)
-    ax_failedcas = df_failedcas.plot(kind='line', linewidth=2, markersize=8)
-    plt.title('Thread vs Failed CAS calls in 1000s', fontsize=8)
-    plt.xlabel('Number of threads', fontsize=8)
-    plt.ylabel('Number of Failed CAS calls', fontsize=8)
-    ax_failedcas.legend(df_failedcas.columns, fontsize=8)
-    plt.grid(True)
-    plt.savefig('benchmarking/failedcas_plot.pdf', format='pdf')
+# #plotting of failedcascounter
+# plt.figure()
+# if os.path.exists('benchmarking/failedcascounter.csv'):
+#     print('voila you are done!')
+#     df_failedcas = pd.read_csv('benchmarking/failedcascounter.csv')
+#     df_failedcas.columns = df_failedcas.columns.str.strip()
+#     df_failedcas.set_index('No of threads', inplace=True)
+#     ax_failedcas = df_failedcas.plot(kind='line', linewidth=2, markersize=8)
+#     plt.title('Thread vs Failed CAS calls in 1000s', fontsize=8)
+#     plt.xlabel('Number of threads', fontsize=8)
+#     plt.ylabel('Number of Failed CAS calls', fontsize=8)
+#     ax_failedcas.legend(df_failedcas.columns, fontsize=8)
+#     plt.grid(True)
+#     plt.savefig('benchmarking/failedcas_plot.pdf', format='pdf')
     
     
 

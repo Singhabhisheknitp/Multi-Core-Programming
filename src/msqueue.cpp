@@ -16,7 +16,8 @@ private:
 
 
 public:
-    atomic<int> failedcas_count = 0;
+    atomic<int> failedcasenq_count = 0;
+    atomic<int> failedcasdeq_count = 0;
     MSqueue() {
         Node* dummy = new Node(T());
         head.store(dummy);
@@ -35,17 +36,17 @@ public:
                     if (last->next.compare_exchange_weak(next, node)) {
 
                        if(!tail.compare_exchange_weak(last, node)){
-                        failedcas_count.fetch_add(1);
+                        failedcasenq_count.fetch_add(1);
                        }
                         return;
                       } else{
-                        failedcas_count.fetch_add(1);
+                        failedcasenq_count.fetch_add(1);
                     
                     }
                 } else {
                    if(!tail.compare_exchange_weak(last, next))
                      {
-                      failedcas_count.fetch_add(1);
+                      failedcasenq_count.fetch_add(1);
                      }
                 }
             }
@@ -63,8 +64,8 @@ public:
                     return false;
                 }
                 else {
-                    tail.compare_exchange_weak(last, next);  // if front & last same without next being null pointer,
-                                                            // then just one node added halfway and tail field not updated
+                    if(!tail.compare_exchange_weak(last, next)) // if front & last same without next being null pointer,
+                         {failedcasdeq_count.fetch_add(1); }                                  // then just one node added halfway and tail field not updated
                                                            //hence helping other as typical lockfree pattern
                 }
                 
@@ -72,14 +73,18 @@ public:
                 T value = next->value;
                 if (head.compare_exchange_weak(front, next)) {
                     return value;
+                } else {
+                    failedcasdeq_count.fetch_add(1);
+                    }
                 }
             }
         }
     }
 
- }
+ 
 
     void resetFailedCasCount(){
-        failedcas_count.store(0);
+        failedcasenq_count.store(0);
+        failedcasdeq_count.store(0);
     }
 }; 
