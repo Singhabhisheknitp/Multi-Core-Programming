@@ -56,13 +56,31 @@ void benchmark2(Queue& queue, int threadnum) {
     }
 }
 
+template <class Queue>
+void ENQ(Queue& queue, int threadnum) {
+    int ceiling = (OPERATIONS_PER_THREAD ) / threadnum;
+    int x = 0;
+    for (int i = 1; i < ceiling; i++) {
+        queue.enqueue(i);
+    }
+}
+
+template <class Queue>
+void DEQ(Queue& queue, int threadnum) {
+    int ceiling = (OPERATIONS_PER_THREAD ) / threadnum;
+    int x = 0;
+    for (int i = 1; i < ceiling; i++) {
+        queue.dequeue();
+    }
+}
+
 
 template<class Queue>
-double queuetest(int threadnum, Queue& queue){ 
+double queuetest(void(*benchmark)(Queue&, int),int threadnum, Queue& queue){ 
     vector<thread> threads;
     auto start = chrono::high_resolution_clock::now(); // START 
 
-    for(int i = 1; i <= threadnum; i++) {threads.push_back(thread(benchmark1<Queue>, ref(queue), threadnum ));}
+    for(int i = 1; i <= threadnum; i++) {threads.push_back(thread(benchmark, ref(queue), threadnum ));}
     for(auto& thread : threads) {thread.join();}
 
     auto end = chrono::high_resolution_clock::now();
@@ -72,49 +90,54 @@ double queuetest(int threadnum, Queue& queue){
 
 template <class Queue>
 void logger(const string& file_name, const string& queue_name, int step = 1, int thread_count = 4) {
-    ofstream lock_latency_file("benchmark1ing/" + file_name);   
+    ofstream lock_latency_file("benchmarking/" + file_name);   
     lock_latency_file << "No of threads," << queue_name << "\n";
     Queue queue;
     int threadnum = 1;
     while (threadnum <= thread_count) { 
         double time_queue = queuetest(threadnum,  queue); 
-        lock_latency_file << threadnum << "," << time_queue<< "\n";
-        threadnum = threadnum*step;  
-        cout<<"work done: "<<(threadnum/thread_count)*100<<endl; 
-       
+        lock_latency_file << threadnum << "," << time_queue<< "\n"; 
+        cout<<"work done for : "<<threadnum<<"no of threads"<<endl; 
+        threadnum = threadnum + step;     
     }
     lock_latency_file.close();
     
 }
 
+
+
+//to count the number of times fixlist is called
 template <class Queue>
-void fixlistcaller(int thread_count = 4, int step = 1){
-    ofstream fixlistcaller("benchmarking/fixlistcaller.csv");
-    fixlistcaller << "No of threads, number of calls \n";
+void fixlistcaller(const string& benchmark_filename, void (*benchmark)(Queue&, int), int thread_count = 4, int step = 1){
+    ofstream fixlistcaller("benchmarking/fixlistcaller" + benchmark_filename);
+    fixlistcaller << "No of threads," << benchmark_filename<< "\n";
     Queue queue;
     int threadnum = 1;
     while (threadnum <= thread_count) { 
         int count = 0;
-        double time_queue = queuetest(threadnum,  queue); 
+        double time_queue = queuetest(benchmark, threadnum,  queue); 
         count = queue.fixlistcount.load();
         fixlistcaller << threadnum << "," << count << "\n";
         cout<<"work done: "<<threadnum<<endl;
         queue.resetFixlistCount();
-        threadnum = threadnum*step;
+        threadnum = threadnum + step;
     }
     fixlistcaller.close();
     
 }
 
+
+
+//to count failed CAS this function is used
 template <class Queue>
-void casfailcounter(int thread_count = 4, int step = 1){
+void casfailcounter(void (*benchmark)(Queue&, int), int thread_count = 4, int step = 1){
     ofstream casfailcounter("benchmarking/failedcascounter.csv");
     casfailcounter << "No of threads, number of failed CAS in 1000s\n";
     Queue queue;
     int threadnum = 1;
     while (threadnum <= thread_count) { 
         int count = 0;
-        double time_queue = queuetest(threadnum,  queue); 
+        double time_queue = queuetest(benchmark, threadnum,  queue); 
         count = queue.failedcas_count.load();
         casfailcounter << threadnum << "," << count*1e-3<< "\n";
         cout<<"work done: "<<threadnum<<endl;
@@ -124,3 +147,26 @@ void casfailcounter(int thread_count = 4, int step = 1){
     casfailcounter.close();
     
 }
+
+
+
+
+
+
+// to create error plot
+// template <class Queue>
+// void errorplot(const string& file_name, const string& queue_name, int step = 1, int thread_count = 4, int iteration = 1) {
+//     ofstream errorplot("benchmarking/errorplot" + file_name, ios::app);   
+//     errorplot << "No of threads," << queue_name <<", No of iterations"<< "\n";
+//     Queue queue;
+//     int threadnum = 1;
+//     while (threadnum <= thread_count) { 
+//         double time_queue = queuetest(threadnum,  queue); 
+//         errorplot << threadnum << "," << time_queue<<","<< iteration<<"\n"; 
+//         cout<<"work done: "<<(threadnum*100/thread_count)<<"%"<<endl; 
+//         threadnum = threadnum + step; 
+       
+//     }
+//     errorplot.close();
+    
+// }
