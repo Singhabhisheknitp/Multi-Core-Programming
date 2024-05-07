@@ -8,11 +8,10 @@
 #include <unistd.h>
 #include <functional>
 #include <random>
-// #include "src/msqueue.cpp"
-// #include "src/twolockqueue.cpp"
-// #include "src/optimistic.cpp"
+#include "src/msqueue.cpp"
+#include "src/twolockqueue.cpp"
+#include "src/optimistic.cpp"
 #include "src/msqueueABAsafe.cpp"
-
 #include "src/optmisticABAsafe.cpp"
 using namespace std;
 constexpr int OPERATIONS_PER_THREAD = 1000000;  
