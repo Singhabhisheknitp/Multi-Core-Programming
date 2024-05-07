@@ -4,8 +4,8 @@
 #include <atomic>
 using namespace std;
 #include"tagpointerABA.cpp"
-// #include"node.cpp"
-#include"src/trieberstack.cpp"
+#include"node.cpp"
+// #include"src/trieberstack.cpp"
 
 
 template<typename T>
@@ -23,7 +23,7 @@ struct MSQueueABA {
     TaggedPtr<Node<T>> Tail;
     // TreiberStack<int> memorypool;
 
-    MSQueue() {
+    MSQueueABA() {
         Node<T>* dummy = new Node<T>(0);
         TaggedPtr<Node<T>> tp(dummy);
         Head = tp;
@@ -61,7 +61,6 @@ struct MSQueueABA {
             if(head.ptr == Head.ptr){
                 if(head.ptr == tail.ptr){
                     if(next.getPtr() == nullptr){
-                        cout << "queue empty" << endl;
                         return;
                     }
                     cas(&Tail, tail, TaggedPtr<Node<T>>(next.getPtr(), tail.getTag() + 1)); //meaning some node is added to tail.next so tail is lagging by one node swing to update that

@@ -28,6 +28,7 @@ int main() {
 
     //ABA failsafe MS queue & optimistic Queue
     logger<OptimisticQueueABA<int>>("optimisticABA.csv", "OptimisticQueueABA", benchmark1, step, thread_count);
+    // logger<MSQueueABA<int>>("msqueueABA.csv", "MSQueueABA", benchmark1, step, thread_count);
 
 
     return 0;

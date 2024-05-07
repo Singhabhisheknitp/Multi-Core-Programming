@@ -5,6 +5,13 @@
 using namespace std;
 #include"tagpointerABA.cpp"
 
+template<typename T>
+bool cas(TaggedPtr<T>* addr, TaggedPtr<T> oldVal, TaggedPtr<T> newVal) {
+    uintptr_t expected = oldVal.ptr;
+    uintptr_t desired = newVal.ptr;
+    return __sync_bool_compare_and_swap(&addr->ptr, expected, desired);
+}
+
 
 template<typename T>
 class OptimisticQueueABA {
@@ -13,18 +20,18 @@ private:
         T value;
         TaggedPtr<Node> next;
         TaggedPtr<Node> prev;
-        Node(T value) : value(value), next(nullptr), prev(nullptr) {}
+        Node(T value) : value(value), next(nullptr, 0), prev(nullptr, 0) {}
     };
 
     atomic<TaggedPtr<Node>> Head;
     atomic<TaggedPtr<Node>> Tail;
 
 public:
-    OptimisticQueue() {
+    OptimisticQueueABA() {
         Node* dummy = new Node(T());
         TaggedPtr<Node> tp(dummy);
-        head.store(tp);
-        tail.store(tp);
+        Head.store(tp);
+        Tail.store(tp);
     }
 
     void enqueue(T value) {
@@ -32,8 +39,8 @@ public:
         TaggedPtr<Node> tail;
         while (true) {
             tail = Tail.load();
-            node->next = TaggedPtr<Node<T>>(next.getPtr(), tail.getTag() + 1);
-            if (cas(&Tail, tail, TaggedPtr<Node<T>>(node, tail.getTag() + 1))) {
+            node->next = TaggedPtr<Node>(tail.getPtr(), tail.getTag() + 1);
+            if (cas(&Tail, tail, TaggedPtr<Node>(node, tail.getTag() + 1))) {
                 tail.getPtr()->prev = TaggedPtr<Node>(node, tail.getTag() + 1);
                 return;
             }
@@ -49,9 +56,9 @@ public:
                 head = Head.load();
                 tail = Tail.load();
                 firstNodeprev = head.getPtr()->prev;
-                if (head == Head.load()) {
-                if (tail != head) {
-                    if (firstNodeprev.getTag() != head.getTag() {
+                if (head.ptr == Head.ptr) {
+                if (tail.ptr != head.ptr) {
+                    if (firstNodeprev.getTag() != head.getTag()) {
                         fixlist(head, tail);
                         continue;
                     } else {
