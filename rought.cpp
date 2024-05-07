@@ -3,19 +3,12 @@
 #include <iostream>
 #include <atomic>
 using namespace std;
-#include"tagpointerABA.cpp"
-#include"node.cpp"
-
-template<typename T>
-bool cas(TaggedPtr<T>* addr, TaggedPtr<T> oldVal, TaggedPtr<T> newVal) {
-    uintptr_t expected = oldVal.ptr;
-    uintptr_t desired = newVal.ptr;
-    return __sync_bool_compare_and_swap(&addr->ptr, expected, desired);
-}
+#include"src/tagpointerABA.cpp"
+#include"src/node.cpp"
 
 
 template<typename T>
-class OptimisticQueueABA {
+class OptimisticQueue {
 private:
     struct Node {
         T value;
@@ -24,16 +17,15 @@ private:
         Node(T value) : value(value), next(nullptr), prev(nullptr) {}
     };
 
-  
-
-public:
     atomic<TaggedPtr<Node>> Head;
     atomic<TaggedPtr<Node>> Tail;
-    OptimisticQueueABA() {
+
+public:
+    OptimisticQueue() {
         Node* dummy = new Node(T());
         TaggedPtr<Node> tp(dummy);
-        Head.store(tp);
-        Tail.store(tp);
+        head.store(tp);
+        tail.store(tp);
     }
 
     void enqueue(T value) {
@@ -41,8 +33,8 @@ public:
         TaggedPtr<Node> tail;
         while (true) {
             tail = Tail.load();
-            node->next = TaggedPtr<Node>(tail.getPtr(), tail.getTag() + 1);
-            if (cas(&Tail, tail, TaggedPtr<Node>(node, tail.getTag() + 1))) {
+            node->next = TaggedPtr<Node<T>>(next.getPtr(), tail.getTag() + 1);
+            if (cas(&Tail, tail, TaggedPtr<Node<T>>(node, tail.getTag() + 1))) {
                 tail.getPtr()->prev = TaggedPtr<Node>(node, tail.getTag() + 1);
                 return;
             }
@@ -58,9 +50,9 @@ public:
                 head = Head.load();
                 tail = Tail.load();
                 firstNodeprev = head.getPtr()->prev;
-                if (head.ptr == Head.load().ptr) {
-                if (tail.ptr != head.ptr) {
-                    if (firstNodeprev.getTag() != head.getTag()) {
+                if (head == Head.load()) {
+                if (tail != head) {
+                    if (firstNodeprev.getTag() != head.getTag() {
                         fixlist(head, tail);
                         continue;
                     } else {
@@ -81,7 +73,7 @@ public:
         TaggedPtr<Node> curr;
         TaggedPtr<Node> succ;
         curr = tail;
-        while (head.ptr == Head.load().ptr && curr != head) {
+        while (head == Head.load() && curr != head) {
             succ = curr.getPtr()->next;
             succ.getPtr()->prev = TaggedPtr<Node>(curr.getPtr(), curr.getTag() - 1);
             curr = TaggedPtr<Node>(succ.getPtr(), curr.getTag() - 1);

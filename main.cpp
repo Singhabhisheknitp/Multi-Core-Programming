@@ -27,7 +27,7 @@ int main() {
     // casfailcounter<OptimisticQueue<int>>("optimistic.csv", benchmark2, thread_count, step);
 
     //ABA failsafe MS queue & optimistic Queue
-    logger<OptimisticQueueABA<int>>("optimisticABA.csv", "OptimisticQueueABA", benchmark1, step, thread_count);
+    logger<OptimisticQueue<int>>("optimisticABA.csv", "OptimisticQueueABA", benchmark1, step, thread_count);
     // logger<MSQueueABA<int>>("msqueueABA.csv", "MSQueueABA", benchmark1, step, thread_count);
 
 
