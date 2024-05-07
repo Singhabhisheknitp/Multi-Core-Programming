@@ -7,7 +7,7 @@ using namespace std;
 
 
 template<typename T>
-class OptimisticQueue {
+class OptimisticQueueABA {
 private:
     struct Node {
         T value;
