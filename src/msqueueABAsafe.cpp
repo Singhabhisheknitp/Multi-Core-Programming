@@ -5,7 +5,7 @@
 using namespace std;
 #include"tagpointerABA.cpp"
 #include"node.cpp"
-// #include"src/trieberstack.cpp"
+
 
 
 template<typename T>
@@ -21,7 +21,7 @@ template<typename T>
 struct MSQueueABA {
     TaggedPtr<Node<T>> Head;
     TaggedPtr<Node<T>> Tail;
-    // TreiberStack<int> memorypool;
+   
 
     MSQueueABA() {
         Node<T>* dummy = new Node<T>(0);
@@ -71,6 +71,5 @@ struct MSQueueABA {
                 }
             }
         }
-        // (head.getPtr());
     }
 };

@@ -66,7 +66,6 @@ public:
                     } else {
                         T value = firstNodeprev.getPtr()->value;
                         if (cas(&Head, head, TaggedPtr<Node>(firstNodeprev.getPtr(), head.getTag() + 1))) {
-                            // delete head.getPtr();
                             return value;
                         }
                     }
